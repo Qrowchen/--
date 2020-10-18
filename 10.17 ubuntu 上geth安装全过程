@@ -1,0 +1,39 @@
+问题一：
+https://blog.csdn.net/codehxy/article/details/90487318
+解决‘E: 无法获得锁 /var/lib/dpkg/lock-frontend - open (11: 资源暂时不可用) ’ 问题
+报错 无法获得锁 /var/lib/dpkg/lock-frontend - open (11: 资源暂时不可用) 
+首先查看下 ls /var/lib/dpkg/lock-frontend 
+然后删除 sudo rm -r -f /var/lib/dpkg/lock-frontend
+如果依然报错 无法获得锁 /var/lib/dpkg/lock - open (11: 资源暂时不可用) ’
+删除 sudo  rm  -r -f /var/lib/dpkg/lock
+
+
+连接不到cn.archive.ubuntu.com时，重新配置源。
+https://blog.csdn.net/chid/article/details/6120633
+
+安装geth
+https://blog.csdn.net/u014454538/article/details/88734654
+1.安装git（通过源码编译的方式安装geth，需要此步骤）
+sudo apt-get install git
+验证
+git --version
+2.安装nodejs和npm
+安装nodejs
+sudo apt-get install nodejs
+安装npm
+sudo apt-get install npm 
+全局安装n管理器，用于管理nodejs版本
+
+sudo npm install n -g
+sudo n stable
+验证
+node -v
+
+3.安装go语言
+https://blog.csdn.net/u014454538/article/details/88649963
+检验：报错 go run: cannot run non-main package
+https://blog.csdn.net/cainiaobulan/article/details/100900267
+
+4.安装solc
+
+5.安装geth
