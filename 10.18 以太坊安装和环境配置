@@ -1,0 +1,63 @@
+10.18 以太坊安装和环境配置
+1.geth 用户创建：
+命令：
+	geth account new
+结果：
+	Your new key was generated
+
+	Public address of the key:   0xF6BD59054f4E7E689a04B830b127083ae9745272
+	Path of the secret key file: /home/hadoop/.ethereum/keystore/UTC--2020-10-18T08-18-54.622601609Z--f6bd59054f4e7e689a04b830b127083ae9745272
+
+列出当前用户使用的秘钥中的账户：
+命令:
+	geth account list
+结果：
+	INFO [10-18|16:23:50.851] Maximum peer count                       ETH=50 LES=0 total=50
+	INFO [10-18|16:23:50.851] Smartcard socket not found, disabling    err="stat /run/pcscd/pcscd.comm: no such file or directory"
+	INFO [10-18|16:23:50.853] Set global gas cap                       cap=25000000
+	Account #0: {f6bd59054f4e7e689a04b830b127083ae9745272} keystore:///home/hadoop/.ethereum/keystore/UTC--2020-10-18T08-18-54.622601609Z--f6bd59054f4e7e689a04b830b127083ae9745272
+
+3.尝试使用geth console创建账户
+命令行直接输入：
+	geth console 2>> file_to_log_output
+结果：
+	Welcome to the Geth JavaScript console!
+
+	instance: Geth/v1.9.23-stable-8c2f2715/linux-amd64/go1.15
+	coinbase: 0xf6bd59054f4e7e689a04b830b127083ae9745272
+	at block: 0 (Thu Jan 01 1970 08:00:00 GMT+0800 (CST))
+	datadir: /home/hadoop/.ethereum
+ 	modules: admin:1.0 debug:1.0 eth:1.0 ethash:1.0 miner:1.0 net:1.0 personal:1.0 rpc:1.0 txpool:1.0 web3:1.0
+新建用户：
+	personal.newAccount()
+查看用户：
+	eth.accounts
+
+3.mist生产
+
+二、以太币发送
+参考：
+	https://blog.csdn.net/pony_maggie/article/details/79649365
+1.geth控制台
+	var sender = eth.account[0]
+	var reciver = eth.accounts[1]
+	var amount = web3.toWei(0.01,"ether")
+	web3.eth.sendTransaction({from:sender,to:reciver,value:amount})
+2.查看剩余以太币
+	var address0=web3.eth.accounts[0];
+	address0.toString();
+	web3.eth.getBalance(address0);
+备注：有时候用console.log(),可以理解为js的 alert 升级版，可以看到对象内容
+
+三、客户端应用开发接口
+以太坊提供基于 JSON-RPC 的方法供应用程序调用。不同语言有不同库函数
+
+四、网络基本操作
+	以太坊网络由各个客户端P2P自组织
+	用户可以对客户端不同操作和配置，进入不同的以太坊网络，或者跟着应用构建新的以太坊网络。
+（一）、基本操作
+	以太坊网络信息监测、客户端之间链接
+	以太坊网络通过客户端之间P2P对等网络同行链接保证数据的同步和客户端之间的信息交互
+	Geth启动后懂寻找对等通信节点（peer）till数量足够为止。
+	如果用户路由把UPnP设置为 使能状态 或 在一个面向互联网的服务器云信以太坊客户端，客户端就能接受其他节点的链接
+	
