@@ -68,7 +68,7 @@ IPC 访问命令：
 geth attach ipc:\\.\pipe\geth.ipc
 输入后对以太坊节点可以进行管理
 或者本地假装 ROC访问：
-geth attach rcp:http://localhost:8545
+geth attach rpc:http://localhost:8545
 
 在attach后的cmd输入命令
 创建新用户命令 》personal.newAccount()
