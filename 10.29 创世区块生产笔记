@@ -1,0 +1,81 @@
+之前学solidity去了，没更新，现在geth重新开始
+
+创世区块和相关问题：
+之前的抄书上的genesis.json:
+{
+	"config":{
+		"chainId":15,
+		"homesteadBlock":0,
+		"eip155Block":0,
+		"eip158Block":0
+	},
+	"nonce":"0x0000000000000042",
+	"mixhash":
+	"0x0000000000000000000000000000000000000000000000000000000000000000",
+	"difficulty":"0x200",
+	"alloc":{},
+	"coinbase":"0x0000000000000000000000000000000000000000",
+	"timestamp":"0x00",
+	"parentHash":"0x0000000000000000000000000000000000000000000000000000000000000000",
+	"gasLimit":"0xffffffff",
+	"alloc":{
+	}
+}  
+报错 Failed to write genesis block: unsupported fork ordering: eip150Block not enabled, but eip155Block enabled at 0
+问题：用比较短的negative代码写初始块
+解决：搜索到博客：https://blog.csdn.net/feng_xinlei/article/details/104200467
+方法：genesis换成下面：
+{
+  "config": {
+    "chainId": 666,
+    "homesteadBlock": 0,
+    "eip150Block": 0,
+    "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "eip155Block": 0,
+    "eip158Block": 0,
+    "byzantiumBlock": 0,
+    "constantinopleBlock": 0,
+    "petersburgBlock": 0,
+    "istanbulBlock": 0,
+    "ethash": {}
+  },
+  "nonce": "0x0",
+  "timestamp": "0x5ddf8f3e",
+  "extraData": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "gasLimit": "0x47b760",
+  "difficulty": "0x00002",
+  "mixHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "coinbase": "0x0000000000000000000000000000000000000000",
+  "alloc": { },
+  "number": "0x0",
+  "gasUsed": "0x0",
+  "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000"
+}
+
+出去cmd运行命令：geth --datadir F:\geth_data_storage init "F:\geth_data_storage\genesis.json" 即可部署区块链到第一个文件夹处
+
+geth默认IPC（本地网络访问），为了确保可以远程访问（RPC）输入以下命令行
+geth --datadir "F:\geth_data_storage\chaindata" --rpc --rpcapi "eth,web3,miner,admin,personal,net" --rpccorsdomain "*" --nodiscover --networkid 15
+结果是 INFO [10-29|10:37:29.177] HTTP server started                      endpoint=127.0.0.1:8545 cors=* vhosts=localhost 
+这样基本就对了，相当于一个监听窗口，要运行新命令另外开一个cmd
+
+需要注意的是打印出来的有一行 IPC endpoint opened,后面是链接，比如下方：
+INFO [10-29|10:37:29.169] IPC endpoint opened                      url=\\.\pipe\geth.ipc
+INFO [10-29|10:37:29.173] Started P2P networking                   self="enode://0673ab30bf12f8e1d0fed3af36d4a6ead99b1447558b7af0118b95119ee67db05c6043b831bd310a1beeaa2e88272e2955466f58dfac116eeb8fad1e072b7792@127.0.0.1:30303?discport=0"
+
+记住这个url，之后会用
+IPC 访问命令：
+geth attach ipc:\\.\pipe\geth.ipc
+输入后对以太坊节点可以进行管理
+或者本地假装 ROC访问：
+geth attach rcp:http://localhost:8545
+
+在attach后的cmd输入命令
+创建新用户命令 》personal.newAccount()
+0x5251810d61beac8c403a1b80d9a9c973628e317c
+可以创建多个用户，但是只有一个在挖矿收收益，可以用命令》miner.setEtherbase("账户地址") 更改挖矿人
+
+既然有账户了就可以开始挖矿 ，调用命令 》miner.start(n),n替换为任意数，代表挖矿线程数（可以为空，默认；六线程）
+INFO [10-29|11:49:55.138] Updated mining threads                   threads=6
+INFO [10-29|11:49:55.141] Transaction pool price threshold updated price=1000000000
+INFO [10-29|11:49:55.144] Commit new mining work                   number=1 sealhash="46aad0…7a11ab" uncles=0 txs=0 gas=0 fees=0 elapsed=0s
