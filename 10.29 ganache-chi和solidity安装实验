@@ -1,0 +1,40 @@
+一、ganachecli：
+起因：以太坊几分钟一个区块，之后才能测试合约是否达到需求，要这样测试成本时间太多，所以用ganachi环境--创建交易不放进交易池等待挖矿，直接立即写入账本，可以作为以太坊节点。
+prerequisite：基于Node.js开发，需要先安装node.js
+去 https://nodejs.org/en/download/ 直接点，下载后一路默认就行
+可以cmd里面输入命令 npm --version 和 node --version 可以看到版本号说明下载完成
+用npm下载ganache-chi,在cmd输入：npm install -g ganache-cli下载ganache-cli
+完了cmd输入
+>ganache-cli 登入，自动生成10个
+注意不能同时开启geth，端口会竞争出bug
+
+这时候如果geth attach会登入 ganachecli创建的账户（默认第一个，带100ether）
+
+二、solidity：
+起因：智能合约专用语言，这里下载solidity的编译器，编译出字节码和其他输出物（ABI），以前和geth绑定，现在需要npm自己下载
+>npm install -g solc
+
+三、web3js库
+开源js库，可以连接本地或远程以太坊节点，使用的是IPC或RPC协议。
+安装 个人实验推荐npm下载cnpm再下载：
+https://www.cnblogs.com/juehai/p/9721841.html
+https://www.cnblogs.com/juehai/p/10551420.html
+因为这里不需要指定版本，而且能下没bug
+主要是这两句
+> npm install -g cnpm --registry=https://registry.npm.taobao.org
+> cnpm install web3 -save-dev
+
+web3安装完成验证：
+> var Web = require('web3')                                                   // 加载web3模块
+> var web = new Web(new Web.providers.HttpProvider('http://localhost:8545'))  // 新建一个HttpProvider实例，用于连接本地端口是8454的以太坊节点
+> web.isConnected()                                                           // 返回true就说明web3已经连接上了
+虽然书上这么说，但是我怀疑可能最新版web3已经把isConnect删去了，没能验证成功
+https://blog.csdn.net/wahaha13168/article/details/80660481 果然 这个博客说明0.10.0之后删除了这个函数
+验证建议看这个 
+附上另一个连接 https://blog.csdn.net/long085/article/details/80294910
+后期这里有bug了再说
+附上一个顺手搜索到的官网
+https://www.npmjs.com/package/web3
+http://cw.hubwiz.com/card/c/web3.js-1.0/
+
+四、Mist钱包
