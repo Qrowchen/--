@@ -1,0 +1,104 @@
+Main Topic : zether
+Abstract : 
+	require :
+		no easy way to add a meaningful level of privacy on ethereum.
+	what is zether : 
+		a decetralized,confidential "payment mechanism" which compatible with smart contract platform like ethereum.
+	character of zether :
+		against reply attacks and front-running situation.
+		mechanism which enable to interoperate with arbitrary smart contracts, help pop apps confidential.
+		Bullet-proof protocol, general interested. (???)
+	form(maybe):
+		a smart contract
+
+Introduction:
+	case:
+		sealed-bid auction:
+			traditionally: 
+				1.bidders submit sealed-bids to auctioneer, nobody know how much others have bid.
+				2.bids are unsealed.
+				3.a bidder with highest price win.
+			question:
+				how can it be make while all data on ethereum are visible.
+			official solve now:
+				type 1.bidder send a hash of their bids to registrar to register a name, which deposit more money than true bid value.
+				type 2.bidder send bids with fake bids
+				type 3.several general-purpose cryptographic solution have been proposed to run smart contract so protect privacy
+			question:
+				none can hide value absolutly.
+				not totally decentralized / too expensive
+				easy to build transact platform, but not easy to make it confidential
+
+	confidential transfers:
+		traditional for BTC: UTXO (unspend-transaction-output model): 
+			character: 
+				1.with almost all the ways to transfer confidentially(pop by bitcoin)
+			drawback:
+				1.not well suit for app that need to maintain several state,while Ether base one account-based modle.
+				2.require major change to Bitcoin design and have been seperated to crypto-currency.
+		why as a smart contract:
+			1.powerful platform such as Ethereum can be enhance by deploying new applications.
+			2.althogh it's conceived that several UTXO-based mechanism can be implemented over a contract ,with issues like:high gas cost/low confidential/ interoperability / adoption.
+
+	zether:
+		introduce:
+			efficient, fully-decentralized confidential payment mechanism in account-base model.
+			which not require change of platform
+			describe as a smart contract can be run individually or interact with other smart contracts to exchange tokens
+		character:
+			confidentiality: balances are kept encrypted at all time
+			implementation:
+			interoperation:
+			anonymity:
+
+Background on Ethereum:
+	acronym:
+		(a)EOAs:elxternally-owned accounts(controlled by key)
+		(b)contract accounts(controlled by code)
+	mechanism:
+		1. diff act have diff fee,for 256bit data, 20000 wei for remember, 5000 for change and 200 for view
+		2. sender pay all the cost
+		3. sender send gaslimit for total cost, gas price for will to pay for each unit gas spend
+		4. if gaslimit < gasneeded to process, miner collect fee but not change the state, and refund excess money
+
+		5.current limit 8*10^^6 gas, 3for arithmatic, totoal network run less than 180k per second.several complex like sha256 use function to reduce cost.
+
+		6.processed in arbitrary order, low computational power, hard to write
+
+zether:
+	mechanism for zether:
+		homomorphic commitments: https://www.sohu.com/a/396624480_100169440
+		questions: 
+			1. account money can only be use after he get this money in his account, even though others covered the transfer before
+			2. one chaos can make this account hard to use
+	application for zether:
+		simple version:
+			aim: fund y with b ZTH
+			prerequisite: have an account im ZSC's state,( accounts are identified with ELGamal public key)
+			action:
+				1.  send smart contract b BTH
+				2 recharge to ZTH:
+				2.1 generate encryption of b by ELGamal(with randomness 0 ???????)
+				2.2 add encryption balance to account y;
+				3 withdraw to ETH:
+				3.1 reveal current balance b
+				3.2 give ZK-proof that account y connect b
+				4 from ZTH TO ZTH：
+				4.1 encrypt b under both y and y'(ciphertext associated with y)
+				4.2 system use ZK-proof(sum-bullet-proof now upgrade) show two ciphertext are true and amount is same.
+				4.3 done
+		shortage and overconme:
+			1.Front-running question:
+				cause: ZK-proof are made by certain state of contract
+				eg: 
+					1. a wanna generate ZK-proof
+					2. b sent an amount of ZTH to a while a is not dealed, and thanks to more gas, b was dealed first
+					3. state was changed and request of making ZK-proof a was forbidden, and not proof for a is not valid anymore.
+						----a proof that a ciphertext encrypts a certain value becomes invalid if the ciphertext changes.
+				(合约执行前参数被其他请求更改，输出被拒绝，a白费燃料) 
+				solve_1:
+					a new type of transaction, which only lock account and keep away from income transfer
+				new problem:
+					people like b who wanna send ZTH to a might be fail, while it's ok the transfer just made.
+					
+	new ZK-proof system:
