@@ -1,0 +1,100 @@
+import random
+import pandas as pd 
+import numpy as np 
+
+def initial_csv(people_numb,credit_floor,dishonest_property,urge_limit,path,title):
+	initial_list = list()
+	for x in range(0,people_numb):
+		rand_name = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba',4))
+		rand_score = 40
+		rand_cred = np.random.uniform()*(1-credit_floor)+credit_floor # 假设守信概率都是 0.9 以上
+		rand_dishon = np.random.uniform()*dishonest_property
+		rand_urge = np.random.uniform()*urge_limit		# 假设紧急概率都在 0.1 一下
+		
+		initial_list.append([rand_name, rand_score, rand_cred, rand_dishon, rand_urge])
+	df1 = pd.DataFrame(columns = title, data=initial_list)
+	df1.to_csv(path,index= False)
+
+def predict(predict_time,path,title,k_ok,k_failed):
+	df = pd.read_csv(path)
+	data_list = df.values.tolist()
+	# 存储每次抽签对象 list, 考虑到紧急情况，那么应该和充电是互斥的
+	# 即 没有充电到，考虑紧急充电
+	urge_list_today=list()
+	for user_id,user in enumerate(data_list):
+		# 判断是否充电
+		if_racharge = np.random.uniform()
+		if if_racharge < user[2]:
+			# 判断是否违约
+			if_dishonest = np.random.uniform()
+			if if_dishonest <user[3]:
+				# 判断违约了
+				user[1] -= 4;
+				user.append(user[1])
+			else:
+				# 判断没违约
+				user[1] += 2
+				user.append(user[1])
+		elif(user[1]>40):
+			######################
+			# 进行竞标游戏的计数环节，竞标者的在list的位置和现有分数被加入列表
+			######################
+			print("user "+str(user_id)+" failed to recharge and try to bid")
+			urge_list_today.append([user_id, user[1]])
+			# user.append(user[1])
+		else:
+			user.append(user[1])
+	# start bid
+	print("urge_list_today:"+str(urge_list_today))
+	winner_index = 0
+	temp_bidder_score = 0
+	if (urge_list_today != []):
+		# 如果今天又竞标的人
+		for urge_list_counter,bidder in enumerate(urge_list_today):
+			print("==user "+str(bidder[0])+" start bid==")
+			if(bidder[1] > temp_bidder_score):
+				winner_index = urge_list_counter
+				print("winner_index"+str(winner_index))
+				print("temp winner info:"+str(urge_list_today[winner_index]))
+
+		print("the winner of the bidder tonight is:"+str(urge_list_today[winner_index]))
+	for i in range(0,len(urge_list_today)):
+		current_score = data_list[urge_list_today[i][0]][1]
+		print("=== current_score of user:" +str(urge_list_today[i][0])+
+			" is "+ str(current_score))
+		if i == winner_index:
+			print
+			data_list[urge_list_today[winner_index][0]][1] = 40 + (current_score-40)*k_ok
+		else:
+			data_list[urge_list_today[i][0]][1] = 40 + (current_score-40)*k_failed
+		print("===after update, current_score of user:" +str(urge_list_today[i][0])+
+			" is "+ str(current_score))
+
+	# easy display
+	for user in data_list:
+		print(user)
+	for log in urge_list_today:
+		print(log)
+	# write in
+	df1 = pd.DataFrame(columns = title, data=data_list)
+	df1.to_csv(path,index= False)
+
+if __name__ == '__main__':
+	people_numb = int(input("people number in test:"))
+	credit_floor = float(input("credit_floor in test(0 to 1), default 0.9:"))
+	dishonest_property = float(input("dishonest_property in test(0 to 1), default 0.1:"))
+	urge_limit = float(input(" urge_upper in test(0 to 1), default 0.1:"))
+	# 暂时不添加失信的影响
+	# dishon_prob = int(input("dishonest probability:"))
+	path = r'C:\Users\Qrow chen\Desktop\original_data.csv'
+	title = ['name','score','credit_probability','dishonest_property','urge_probability']
+	initial_csv(people_numb,credit_floor,dishonest_property,urge_limit,path,title)
+	# ===== 更新每日 =====
+	predict_time = int(input("input predict days:"))
+	k_ok = float(input("input refund percentage for bid winner:"))
+	k_failed = float(input("input refund percentage for bid losser:"))
+	for i in range(0,predict_time):
+		print("=========== day " +str(i)+ " ============")
+		title.append("the"+str(i)+"days later")
+		predict(predict_time,path,title,k_ok,k_failed)
+
